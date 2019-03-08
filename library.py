@@ -27,135 +27,121 @@ COMMAND_BUFFER_SIZE = 256
 
 
 def CreateServerSocket(port):
-  """Creates a socket that listens on a specified port.
+    """Creates a socket that listens on a specified port.
 
-  Args:
-    port: int from 0 to 2^16. Low numbered ports have defined purposes. Almost
-        all predefined ports represent insecure protocols that have died out.
-  Returns:
-    An socket that implements TCP/IP.
-  """
+    Args:
+      port: int from 0 to 2^16. Low numbered ports have defined purposes. Almost
+          all predefined ports represent insecure protocols that have died out.
+    Returns:
+      An socket that implements TCP/IP.
+    """
 
     #############################################
-    #TODO: Implement CreateServerSocket Function
+    # TODO: Implement CreateServerSocket Function
     #############################################
+
 
 def ConnectClientToServer(server_sock):
-    # Wait until a client connects and then get a socket that connects to the
-    # client.
-    
 
-    #############################################
-    #TODO: Implement CreateClientSocket Function
-    #############################################
-    
 
+# Wait until a client connects and then get a socket that connects to the
+# client.
+
+
+#############################################
+# TODO: Implement CreateClientSocket Function
+#############################################
 
 
 def CreateClientSocket(server_addr, port):
-  """Creates a socket that connects to a port on a server."""
+    """Creates a socket that connects to a port on a server."""
 
     #############################################
-    #TODO: Implement CreateClientSocket Function
+    # TODO: Implement CreateClientSocket Function
     #############################################
-  
+
 
 def ReadCommand(sock):
-  """Read a single command from a socket. The command must end in newline."""
+    """Read a single command from a socket. The command must end in newline."""
 
     #############################################
-    #TODO: Implement ReadCommand Function
+    # TODO: Implement ReadCommand Function
     #############################################
-  
 
 
 def ParseCommand(command):
-  """Parses a command and returns the command name, first arg, and remainder.
+    """Parses a command and returns the command name, first arg, and remainder.
 
-  All commands are of the form:
-      COMMAND arg1 remaining text is called remainder
-  Spaces separate the sections, but the remainder can contain additional spaces.
-  The returned values are strings if the values are present or `None`. Trailing
-  whitespace is removed.
+    All commands are of the form:
+        COMMAND arg1 remaining text is called remainder
+    Spaces separate the sections, but the remainder can contain additional spaces.
+    The returned values are strings if the values are present or `None`. Trailing
+    whitespace is removed.
 
-  Args:
-    command: string command.
-  Returns:
-    command, arg1, remainder. Each of these can be None.
-  """
-  args = command.strip().split(' ')
-  command = None
-  if args:
-    command = args[0]
-  arg1 = None
-  if len(args) > 1:
-    arg1 = args[1]
-  remainder = None
-  if len(args) > 2:
-    remainder = ' '.join(args[2:])
-  return command, arg1, remainder
+    Args:
+      command: string command.
+    Returns:
+      command, arg1, remainder. Each of these can be None.
+    """
+    args = command.strip().split(' ')
+    command = None
+    if args:
+        command = args[0]
+    arg1 = None
+    if len(args) > 1:
+        arg1 = args[1]
+    remainder = None
+    if len(args) > 2:
+        remainder = ' '.join(args[2:])
+    return command, arg1, remainder
 
 
 class KeyValueStore(object):
-  """A dictionary of strings keyed by strings.
+    """A dictionary of strings keyed by strings.
 
-  The values can time out once they get sufficiently old. Otherwise, this
-  acts much like a dictionary.
-  """
-
-  def __init__(self):
-
-    ###########################################
-    #TODO: Implement __init__ Function
-    ###########################################
-    
-
-  def GetValue(self, key, max_age_in_sec=None):
-    """Gets a cached value or `None`.
-
-    Values older than `max_age_in_sec` seconds are not returned.
-
-    Args:
-      key: string. The name of the key to get.
-      max_age_in_sec: float. Maximum time since the value was placed in the
-        KeyValueStore. If not specified then values do not time out.
-    Returns:
-      None or the value.
-    """
-    # Check if we've ever put something in the cache.
-
-    ###########################################
-    #TODO: Implement GetValue Function
-    ###########################################
-
-
-
-  def StoreValue(self, key, value):
-    """Stores a value under a specific key.
-
-    Args:
-      key: string. The name of the value to store.
-      value: string. A value to store.
+    The values can time out once they get sufficiently old. Otherwise, this
+    acts much like a dictionary.
     """
 
-    ###########################################
-    #TODO: Implement StoreValue Function
-    ###########################################
-
-    
-
-  def Keys(self):
-    """Returns a list of all keys in the datastore."""
+    def __init__(self):
 
     ###########################################
-    #TODO: Implement Keys Function
+    # TODO: Implement __init__ Function
     ###########################################
-    
 
+    def GetValue(self, key, max_age_in_sec=None):
+        """Gets a cached value or `None`.
 
+        Values older than `max_age_in_sec` seconds are not returned.
 
+        Args:
+          key: string. The name of the key to get.
+          max_age_in_sec: float. Maximum time since the value was placed in the
+            KeyValueStore. If not specified then values do not time out.
+        Returns:
+          None or the value.
+        """
+        # Check if we've ever put something in the cache.
 
+        ###########################################
+        # TODO: Implement GetValue Function
+        ###########################################
 
+    def StoreValue(self, key, value):
+        """Stores a value under a specific key.
 
+        Args:
+          key: string. The name of the value to store.
+          value: string. A value to store.
+        """
 
+        ###########################################
+        # TODO: Implement StoreValue Function
+        ###########################################
 
+    def Keys(self):
+        """Returns a list of all keys in the datastore."""
+
+        ###########################################
+        # TODO: Implement Keys Function
+        ###########################################
