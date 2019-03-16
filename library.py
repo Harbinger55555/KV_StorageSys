@@ -121,7 +121,7 @@ class KeyValueStore(object):
         ###########################################
         # TODO: Make the max_age_in_sec feature.
         ###########################################
-        return self.storage[key]
+        return self.storage.get(key, None)
 
     def StoreValue(self, key, value):
         """Stores a value under a specific key.
@@ -135,4 +135,4 @@ class KeyValueStore(object):
     def Keys(self):
         """Returns a list of all keys in the datastore."""
         
-        return self.storage.keys()
+        return list(self.storage.keys())

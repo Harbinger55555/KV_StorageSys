@@ -63,7 +63,7 @@ def PutCommand(name, text, database):
     # TODO: Think of error cases eg. no text, database, etc.
     ##########################################
     database.StoreValue(name, text)
-    print("name = ", name)
+    return f"{name} = {text}"
 
 
 def GetCommand(name, database):
@@ -81,7 +81,8 @@ def GetCommand(name, database):
     ##########################################
     # TODO: Think of error cases eg. no text, database, etc.
     ##########################################
-    database.GetValue(self, name, MAX_CACHE_AGE_SEC)
+    res = database.GetValue(name, MAX_CACHE_AGE_SEC)
+    return str(res) if res else "Key does not exist!"
 
 
 def DumpCommand(database):
@@ -99,7 +100,10 @@ def DumpCommand(database):
     ##########################################
     # TODO: Think of error cases eg. no text, database, etc.
     ##########################################
-    
+    csv_format = ''
+    for key in database.Keys():
+        csv_format += key + ', '
+    return csv_format.strip(', ')
 
 
 def SendText(sock, text):
