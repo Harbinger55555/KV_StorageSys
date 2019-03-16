@@ -72,7 +72,7 @@ def GetCommand(name, database):
       then the string describes the error.
     """
     res = database.GetValue(name)
-    return str(res) if res else "Key does not exist or value timed-out!"
+    return str(res) if res else "Key does not exist!"
 
 
 def DumpCommand(database):

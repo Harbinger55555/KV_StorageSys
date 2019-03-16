@@ -123,7 +123,7 @@ class KeyValueStore(object):
         """
         # Check if we've ever put something in the cache.
         value, stored_time = self.storage.get(key, (None, None))
-        if value and (time.time() - stored_time) <= max_age_in_sec:
+        if value and (not max_age_in_sec or (time.time() - stored_time) <= max_age_in_sec):
             return value
         else:
             return None
