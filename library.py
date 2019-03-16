@@ -39,6 +39,10 @@ def CreateServerSocket(port):
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server_address = ('localhost', port)
     sock.bind(server_address)
+    
+    # Listens for connections.
+    sock.listen(1)
+    
     return sock
 
 
@@ -52,9 +56,10 @@ def ConnectClientToServer(server_sock):
 def CreateClientSocket(server_addr, port):
     """Creates a socket that connects to a port on a server."""
 
-    #############################################
-    # TODO: Implement CreateClientSocket Function
-    #############################################
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server_address = (server_addr, port)
+    sock.connect(server_address)
+    return sock
 
 
 def ReadCommand(sock):

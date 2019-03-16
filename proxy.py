@@ -40,23 +40,19 @@ def ForwardCommandToServer(msg_to_server):
       A single line string response with no newlines.
     """
     command_line, server_addr, server_port = msg_to_server
+    client_socket = library.CreateClientSocket(server_addr, server_port)
     
-    # Create a TCP/IP socket
-    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    
-    server_address = (server_addr, server_port)
-    sock.connect(server_address)
     res = None
 
     # TODO: currently sending whole cmdline, check if only cmd is sent in real
     # protocol.
     try:
         # Relay command_line to server and return the response.
-        sock.sendall(command_line.encode())
-        res = library.ReadCommand(sock).strip('\n')
+        client_socket.sendall(command_line.encode())
+        res = library.ReadCommand(client_socket).strip('\n')
 
     finally:
-        sock.close()
+        client_socket.close()
     
     return res
   

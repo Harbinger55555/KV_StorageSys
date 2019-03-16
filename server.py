@@ -117,9 +117,6 @@ def main():
     # The server socket that will listen on the specified port. If you don't
     # have permission to listen on the port, try a higher numbered port.
     server_sock = library.CreateServerSocket(LISTENING_PORT)
-    
-    # Listens for connections.
-    server_sock.listen(1)
 
     # Handle commands indefinitely. Use ^C to exit the program.
     while True:
