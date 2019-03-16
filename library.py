@@ -70,6 +70,11 @@ def ReadCommand(sock):
     #############################################
     # TODO: Implement ReadCommand Function
     #############################################
+    # Receive the data in chunks.
+    cmd_line = b''
+    data = sock.recv(COMMAND_BUFFER_SIZE)
+    cmd_line += data
+    return cmd_line
 
 
 def ParseCommand(command):
@@ -111,6 +116,7 @@ class KeyValueStore(object):
     ###########################################
     # TODO: Implement __init__ Function
     ###########################################
+        self.temp = "temp"
 
     def GetValue(self, key, max_age_in_sec=None):
         """Gets a cached value or `None`.
