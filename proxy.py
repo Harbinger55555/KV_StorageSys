@@ -15,6 +15,7 @@ from __future__ import division
 from __future__ import print_function
 
 import library
+import socket
 
 # Where to find the server. This assumes it's running on the smae machine
 # as the proxy, but on a different port.
@@ -30,36 +31,105 @@ LISTENING_PORT = 8888
 MAX_CACHE_AGE_SEC = 60.0  # 1 minute
 
 
-def ForwardCommandToServer(command_line, server_addr, server_port):
+def ForwardCommandToServer(msg_to_server):
     """Opens a TCP socket to the server, sends a command, and returns response.
 
     Args:
-      command: A single line string command with no newlines in it.
-      server_addr: A string with the name of the server to forward requests to.
-      server_port: An int from 0 to 2^16 with the port the server is listening on.
+      msg_to_server: Contains the cmdline, server_addr, and server_port
     Returns:
       A single line string response with no newlines.
     """
+    command_line, server_addr, server_port = msg_to_server
+    
     # Create a TCP/IP socket
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     
     server_address = (server_addr, server_port)
     sock.connect(server_address)
+    res = None
 
     # TODO: currently sending whole cmdline, check if only cmd is sent in real
     # protocol.
     try:
-        # Send data to server
-        sock.sendall(command_line)
+        # Relay command_line to server and return the response.
+        sock.sendall(command_line.encode())
+        res = library.ReadCommand(sock).strip('\n')
 
     finally:
         sock.close()
+    
+    return res
+  
+
+def PutCommand(name, text, cache, msg_to_server):
+    """Handle the PUT command for a server.
+
+    PUT's first argument is the name of the key to store the value under.
+    All remaining arguments are stitched together and used as the value.
+
+    Args:
+        name: The name of the value to store.
+        text: The value to store.
+        cache: A KeyValueStore containing key/value pairs.
+        msg_to_server: Contains the cmdline, server_addr, and server_port
+    Returns:
+        A human readable string describing the result. If there is an error,
+        then the string describes the error.
+    """
+
+    # Store the value in the cache then relay the PUT to main server.
+    cache.StoreValue(name, text)
+    return ForwardCommandToServer(msg_to_server)
+
+
+def GetCommand(name, cache, msg_to_server):
+    """Handle the GET command for a server.
+
+    GET takes a single argument: the name of the key to look up.
+
+    Args:
+      name: The name of the value to retrieve.
+      cache: A KeyValueStore containing key/value pairs.
+    Returns:
+      A human readable string describing the result. If there is an error,
+      then the string describes the error.
+    """
+    # If name exists in cache, send value to client immediately. Else,
+    # relay to main server and return response.
+    res = cache.GetValue(name, MAX_CACHE_AGE_SEC)
+    if not res:
+        res = ForwardCommandToServer(msg_to_server)
+        # Update cache if name existed in main server database.
+        if (res != "Key does not exist!"):
+            cache.StoreValue(name, text)
+    return res
+
+
+def DumpCommand(database):
+    """Creates a function to handle the DUMP command for a server.
+
+    DUMP takes no arguments. It always returns a CSV containing all keys.
+
+    Args:
+      database: A KeyValueStore containing key/value pairs.
+    Returns:
+      A human readable string describing the result. If there is an error,
+      then the string describes the error.
+    """
+
+    ##########################################
+    # TODO: Think of error cases eg. no text, database, etc.
+    ##########################################
+    csv_format = ''
+    for key in database.Keys():
+        csv_format += key + ', '
+    return csv_format.strip(', ')
 
 
 def SendText(sock, text):
     """Sends the result over the socket along with a newline."""
-    sock.send('%s\n' % text)
-    
+    sock.send(text.encode() + b'\n')
+              
 
 def ProxyClientCommand(sock, server_addr, server_port, cache):
     """Receives a command from a client and forwards it to a server:port.
@@ -78,23 +148,21 @@ def ProxyClientCommand(sock, server_addr, server_port, cache):
     """
     command_line = library.ReadCommand(sock)
     cmd, name, text = library.ParseCommand(command_line)
-    # TODO: refactor the if conditions.
+    result = ''
     
     # Update the cache for PUT commands but also pass the traffic to the server.
     # GET commands can be cached.
+    msg_to_server = (command_line, server_addr, server_port)
     if cmd == 'PUT':
-        cache.StoreValue(name, text)
-        ForwardCommandToServer(command_line, server_addr, server_port)
+        result = PutCommand(name, text, cache, msg_to_server)
     elif cmd == 'GET':
-        if cache.GetValue(name, MAX_CACHE_AGE_SEC):
-            SendText(sock, text)
-        else:
-            cache.StoreValue(name, text)
-            ForwardCommandToServer(command_line, server_addr, server_port)
+        result = GetCommand(name, cache, msg_to_server)
     elif cmd == 'DUMP':
-        ForwardCommandToServer(command_line, server_addr, server_port)
+        result = ForwardCommandToServer(msg_to_server)
     else:
         SendText(sock, 'Unknown command %s' % cmd)
+    
+    SendText(sock, result)
     
 
 def main():
