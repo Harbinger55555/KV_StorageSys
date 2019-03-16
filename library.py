@@ -39,18 +39,21 @@ def CreateServerSocket(port):
     #############################################
     # TODO: Implement CreateServerSocket Function
     #############################################
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server_address = ('localhost', port)
+    sock.bind(server_address)
+    return sock
 
 
 def ConnectClientToServer(server_sock):
+    # Wait until a client connects and then get a socket that connects to the
+    # client.
 
 
-# Wait until a client connects and then get a socket that connects to the
-# client.
-
-
-#############################################
-# TODO: Implement CreateClientSocket Function
-#############################################
+    #############################################
+    # TODO: Implement CreateClientSocket Function
+    #############################################
+    return server_sock.accept()
 
 
 def CreateClientSocket(server_addr, port):
