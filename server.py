@@ -40,8 +40,6 @@ import library
 # The port that we accept connections on. (A.k.a. "listen" on.)
 LISTENING_PORT = 7777
 
-# Cache values retrieved from the server for this long.
-MAX_CACHE_AGE_SEC = 60.0  # 1 minute
 
 def PutCommand(name, text, database):
     """Handle the PUT command for a server.
@@ -57,11 +55,6 @@ def PutCommand(name, text, database):
         A human readable string describing the result. If there is an error,
         then the string describes the error.
     """
-
-    # Store the value in the database.
-    ##########################################
-    # TODO: Think of error cases eg. no text, database, etc.
-    ##########################################
     database.StoreValue(name, text)
     return f"{name} = {text}"
 
@@ -78,11 +71,8 @@ def GetCommand(name, database):
       A human readable string describing the result. If there is an error,
       then the string describes the error.
     """
-    ##########################################
-    # TODO: Think of error cases eg. no text, database, etc.
-    ##########################################
-    res = database.GetValue(name, MAX_CACHE_AGE_SEC)
-    return str(res) if res else "Key does not exist!"
+    res = database.GetValue(name)
+    return str(res) if res else "Key does not exist or value timed-out!"
 
 
 def DumpCommand(database):
@@ -96,10 +86,6 @@ def DumpCommand(database):
       A human readable string describing the result. If there is an error,
       then the string describes the error.
     """
-
-    ##########################################
-    # TODO: Think of error cases eg. no text, database, etc.
-    ##########################################
     csv_format = ''
     for key in database.Keys():
         csv_format += key + ', '
@@ -129,7 +115,6 @@ def main():
             # Read a command.
             command_line = library.ReadCommand(client_sock)
             command, name, text = library.ParseCommand(command_line)
-            # TODO: def server result should be used inplace of ''.
             result = ''
 
             # Execute the command based on the first word in the command line.

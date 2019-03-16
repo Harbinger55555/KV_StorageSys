@@ -97,7 +97,7 @@ def GetCommand(name, cache, msg_to_server):
     if not res:
         res = ForwardCommandToServer(msg_to_server)
         # Update cache if name existed in main server database.
-        if (res != "Key does not exist!"):
+        if (res != "Key does not exist or value timed-out!"):
             cache.StoreValue(name, text)
     return res
 
