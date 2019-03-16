@@ -118,28 +118,26 @@ def main():
         # client.
         client_sock, (address, port) = library.ConnectClientToServer(server_sock)
         print('Received connection from %s:%d' % (address, port))
+        
+        try:
+            # Read a command.
+            command_line = library.ReadCommand(client_sock)
+            command, name, text = library.ParseCommand(command_line)
 
-        # Read a command.
-        command_line = library.ReadCommand(client_sock)
-#        command, name, text = library.ParseCommand(command_line)
+            # Execute the command based on the first word in the command line.
+            if command == 'PUT':
+                result = PutCommand(name, text, database)
+            elif command == 'GET':
+                result = GetCommand(name, database)
+            elif command == 'DUMP':
+                result = DumpCommand(database)
+            else:
+                SendText(client_sock, 'Unknown command %s' % command)
 
-        # Execute the command based on the first word in the command line.
-#        if command == 'PUT':
-#            result = PutCommand(name, text, database)
-#        elif command == 'GET':
-#            result = GetCommand(name, database)
-#        elif command == 'DUMP':
-#            result = DumpCommand(database)
-#        else:
-#            SendText(client_sock, 'Unknown command %s' % command)
-
-#        SendText(client_sock, result)
+            SendText(client_sock, result)
 
         # We're done with the client, so clean up the socket.
-
-        #################################
-        # TODO: Close socket's connection
-        #################################
-
+        finally:
+            client_sock.close()
 
 main()

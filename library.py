@@ -36,9 +36,6 @@ def CreateServerSocket(port):
       An socket that implements TCP/IP.
     """
 
-    #############################################
-    # TODO: Implement CreateServerSocket Function
-    #############################################
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server_address = ('localhost', port)
     sock.bind(server_address)
@@ -49,10 +46,6 @@ def ConnectClientToServer(server_sock):
     # Wait until a client connects and then get a socket that connects to the
     # client.
 
-
-    #############################################
-    # TODO: Implement CreateClientSocket Function
-    #############################################
     return server_sock.accept()
 
 
@@ -67,9 +60,6 @@ def CreateClientSocket(server_addr, port):
 def ReadCommand(sock):
     """Read a single command from a socket. The command must end in newline."""
 
-    #############################################
-    # TODO: Implement ReadCommand Function
-    #############################################
     # Receive the data in chunks.
     cmd_line = b''
     data = sock.recv(COMMAND_BUFFER_SIZE)
