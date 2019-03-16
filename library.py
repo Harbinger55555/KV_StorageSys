@@ -122,11 +122,11 @@ class KeyValueStore(object):
           None or the value.
         """
         # Check if we've ever put something in the cache.
-
-        ###########################################
-        # TODO: Make the max_age_in_sec feature.
-        ###########################################
-        return self.storage.get(key, None)
+        value, stored_time = self.storage.get(key, (None, None))
+        if value and (time.time() - stored_time) <= max_age_in_sec:
+            return value
+        else:
+            return None
 
     def StoreValue(self, key, value):
         """Stores a value under a specific key.
@@ -135,7 +135,7 @@ class KeyValueStore(object):
           key: string. The name of the value to store.
           value: string. A value to store.
         """
-        self.storage[key] = value
+        self.storage[key] = (value, time.time())
 
     def Keys(self):
         """Returns a list of all keys in the datastore."""
