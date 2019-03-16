@@ -103,7 +103,7 @@ def DumpCommand(database):
     csv_format = ''
     for key in database.Keys():
         csv_format += key + ', '
-    return csv_format.strip(', ')
+    return csv_format.strip(', ') if csv_format else "Empty database!"
 
 
 def SendText(sock, text):

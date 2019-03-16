@@ -71,7 +71,7 @@ def PutCommand(name, text, cache, msg_to_server):
         name: The name of the value to store.
         text: The value to store.
         cache: A KeyValueStore containing key/value pairs.
-        msg_to_server: Contains the cmdline, server_addr, and server_port
+        msg_to_server: Contains the cmdline, server_addr, and server_port.
     Returns:
         A human readable string describing the result. If there is an error,
         then the string describes the error.
@@ -90,6 +90,7 @@ def GetCommand(name, cache, msg_to_server):
     Args:
       name: The name of the value to retrieve.
       cache: A KeyValueStore containing key/value pairs.
+      msg_to_server: Contains the cmdline, server_addr, and server_port.
     Returns:
       A human readable string describing the result. If there is an error,
       then the string describes the error.
@@ -105,25 +106,20 @@ def GetCommand(name, cache, msg_to_server):
     return res
 
 
-def DumpCommand(database):
+def DumpCommand(msg_to_server):
     """Creates a function to handle the DUMP command for a server.
 
     DUMP takes no arguments. It always returns a CSV containing all keys.
 
     Args:
       database: A KeyValueStore containing key/value pairs.
+      msg_to_server: Contains the cmdline, server_addr, and server_port.
     Returns:
       A human readable string describing the result. If there is an error,
       then the string describes the error.
     """
-
-    ##########################################
-    # TODO: Think of error cases eg. no text, database, etc.
-    ##########################################
-    csv_format = ''
-    for key in database.Keys():
-        csv_format += key + ', '
-    return csv_format.strip(', ')
+    # Relay the cmdline to the main server and return the response.
+    return ForwardCommandToServer(msg_to_server) 
 
 
 def SendText(sock, text):
@@ -158,7 +154,7 @@ def ProxyClientCommand(sock, server_addr, server_port, cache):
     elif cmd == 'GET':
         result = GetCommand(name, cache, msg_to_server)
     elif cmd == 'DUMP':
-        result = ForwardCommandToServer(msg_to_server)
+        result = DumpCommand(msg_to_server)
     else:
         SendText(sock, 'Unknown command %s' % cmd)
     
