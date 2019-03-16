@@ -40,6 +40,8 @@ import library
 # The port that we accept connections on. (A.k.a. "listen" on.)
 LISTENING_PORT = 7777
 
+# Cache values retrieved from the server for this long.
+MAX_CACHE_AGE_SEC = 60.0  # 1 minute
 
 def PutCommand(name, text, database):
     """Handle the PUT command for a server.
@@ -48,19 +50,20 @@ def PutCommand(name, text, database):
     All remaining arguments are stitched together and used as the value.
 
     Args:
-      name: The name of the value to store.
-      text: The value to store.
-      database: A KeyValueStore containing key/value pairs.
-  Returns:
-    A human readable string describing the result. If there is an error,
-    then the string describes the error.
-  """
+        name: The name of the value to store.
+        text: The value to store.
+        database: A KeyValueStore containing key/value pairs.
+    Returns:
+        A human readable string describing the result. If there is an error,
+        then the string describes the error.
+    """
 
-
-# Store the value in the database.
-##########################################
-# TODO: Implement PUT function
-##########################################
+    # Store the value in the database.
+    ##########################################
+    # TODO: Think of error cases eg. no text, database, etc.
+    ##########################################
+    database.StoreValue(name, text)
+    print("name = ", name)
 
 
 def GetCommand(name, database):
@@ -76,8 +79,9 @@ def GetCommand(name, database):
       then the string describes the error.
     """
     ##########################################
-    # TODO: Implement GET function
+    # TODO: Think of error cases eg. no text, database, etc.
     ##########################################
+    database.GetValue(self, name, MAX_CACHE_AGE_SEC)
 
 
 def DumpCommand(database):
@@ -93,13 +97,14 @@ def DumpCommand(database):
     """
 
     ##########################################
-    # TODO: Implement DUMP function
+    # TODO: Think of error cases eg. no text, database, etc.
     ##########################################
+    
 
 
 def SendText(sock, text):
     """Sends the result over the socket along with a newline."""
-    sock.send('%s\n' % text)
+    sock.send(text.encode() + b'\n')
 
 
 def main():
@@ -123,6 +128,8 @@ def main():
             # Read a command.
             command_line = library.ReadCommand(client_sock)
             command, name, text = library.ParseCommand(command_line)
+            # TODO: def server result should be used inplace of ''.
+            result = ''
 
             # Execute the command based on the first word in the command line.
             if command == 'PUT':

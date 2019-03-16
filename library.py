@@ -64,7 +64,7 @@ def ReadCommand(sock):
     cmd_line = b''
     data = sock.recv(COMMAND_BUFFER_SIZE)
     cmd_line += data
-    return cmd_line
+    return cmd_line.decode()
 
 
 def ParseCommand(command):
@@ -102,11 +102,7 @@ class KeyValueStore(object):
     """
 
     def __init__(self):
-
-    ###########################################
-    # TODO: Implement __init__ Function
-    ###########################################
-        self.temp = "temp"
+        self.storage = {}
 
     def GetValue(self, key, max_age_in_sec=None):
         """Gets a cached value or `None`.
@@ -123,8 +119,9 @@ class KeyValueStore(object):
         # Check if we've ever put something in the cache.
 
         ###########################################
-        # TODO: Implement GetValue Function
+        # TODO: Make the max_age_in_sec feature.
         ###########################################
+        return self.storage[key]
 
     def StoreValue(self, key, value):
         """Stores a value under a specific key.
@@ -133,14 +130,9 @@ class KeyValueStore(object):
           key: string. The name of the value to store.
           value: string. A value to store.
         """
-
-        ###########################################
-        # TODO: Implement StoreValue Function
-        ###########################################
+        self.storage[key] = value
 
     def Keys(self):
         """Returns a list of all keys in the datastore."""
-
-        ###########################################
-        # TODO: Implement Keys Function
-        ###########################################
+        
+        return self.storage.keys()

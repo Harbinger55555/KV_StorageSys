@@ -30,7 +30,7 @@ LISTENING_PORT = 8888
 MAX_CACHE_AGE_SEC = 60.0  # 1 minute
 
 
-def ForwardCommandToServer(command, server_addr, server_port):
+def ForwardCommandToServer(command_line, server_addr, server_port):
     """Opens a TCP socket to the server, sends a command, and returns response.
 
     Args:
@@ -40,26 +40,26 @@ def ForwardCommandToServer(command, server_addr, server_port):
     Returns:
       A single line string response with no newlines.
     """
+    # Create a TCP/IP socket
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    
+    server_address = (server_addr, server_port)
+    sock.connect(server_address)
 
-    ###################################################
-    # TODO: Implement Function: WiP
-    ###################################################
+    # TODO: currently sending whole cmdline, check if only cmd is sent in real
+    # protocol.
+    try:
+        # Send data to server
+        sock.sendall(command_line)
+
+    finally:
+        sock.close()
 
 
-def CheckCachedResponse(command_line, cache):
-    cmd, name, text = library.ParseCommand(command_line)
-
-    # Update the cache for PUT commands but also pass the traffic to the server.
-    ##########################
-    # TODO: Implement section
-    ##########################
-
-    # GET commands can be cached.
-
-    ############################
-    # TODO: Implement section
-    ############################
-
+def SendText(sock, text):
+    """Sends the result over the socket along with a newline."""
+    sock.send('%s\n' % text)
+    
 
 def ProxyClientCommand(sock, server_addr, server_port, cache):
     """Receives a command from a client and forwards it to a server:port.
@@ -76,28 +76,45 @@ def ProxyClientCommand(sock, server_addr, server_port, cache):
       max_age_in_sec: float. Cached values older than this are re-retrieved from
         the server.
     """
-
-    ###########################################
-    # TODO: Implement ProxyClientCommand
-    ###########################################
-
+    command_line = library.ReadCommand(sock)
+    cmd, name, text = library.ParseCommand(command_line)
+    # TODO: refactor the if conditions.
+    
+    # Update the cache for PUT commands but also pass the traffic to the server.
+    # GET commands can be cached.
+    if cmd == 'PUT':
+        cache.StoreValue(name, text)
+        ForwardCommandToServer(command_line, server_addr, server_port)
+    elif cmd == 'GET':
+        if cache.GetValue(name, MAX_CACHE_AGE_SEC):
+            SendText(sock, text)
+        else:
+            cache.StoreValue(name, text)
+            ForwardCommandToServer(command_line, server_addr, server_port)
+    elif cmd == 'DUMP':
+        ForwardCommandToServer(command_line, server_addr, server_port)
+    else:
+        SendText(sock, 'Unknown command %s' % cmd)
+    
 
 def main():
     # Listen on a specified port...
     server_sock = library.CreateServerSocket(LISTENING_PORT)
     cache = library.KeyValueStore()
+    
+    # Listens for connections.
+    server_sock.listen(1)
+    
     # Accept incoming commands indefinitely.
     while True:
         # Wait until a client connects and then get a socket that connects to the
         # client.
         client_sock, (address, port) = library.ConnectClientToServer(server_sock)
         print('Received connection from %s:%d' % (address, port))
-        ProxyClientCommand(client_sock, SERVER_ADDRESS, SERVER_PORT,
-                           cache)
+        try:
+            ProxyClientCommand(client_sock, SERVER_ADDRESS, SERVER_PORT, cache)
 
-    #################################
-    # TODO: Close socket's connection
-    #################################
-
+        finally:
+            client_sock.close()
 
 main()
