@@ -28,7 +28,7 @@ SERVER_PORT = 7777
 LISTENING_PORT = 8888
 
 # Cache values retrieved from the server for this long.
-MAX_CACHE_AGE_SEC = 60.0  # 1 minute
+MAX_CACHE_AGE_SEC = 10.0  # 1 minute
 
 
 def ForwardCommandToServer(msg_to_server):
@@ -73,8 +73,10 @@ def PutCommand(name, text, cache, msg_to_server):
         then the string describes the error.
     """
 
-    # Store the value in the cache then relay the PUT to main server.
-    cache.StoreValue(name, text)
+    # Store the value in the cache if entry exists already, then relay 
+    # the PUT to main server.
+    if cache.GetValue(name):
+        cache.StoreValue(name, text)
     return ForwardCommandToServer(msg_to_server)
 
 
