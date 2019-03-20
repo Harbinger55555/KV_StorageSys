@@ -73,10 +73,12 @@ def PutCommand(name, text, cache, msg_to_server):
         then the string describes the error.
     """
 
-    # Store the value in the cache if entry exists already, then relay 
-    # the PUT to main server.
-    if cache.GetValue(name):
-        cache.StoreValue(name, text)
+    # # Store the value in the cache if entry exists already, then relay
+#     # the PUT to main server.
+#     if cache.GetValue(name):
+#         cache.StoreValue(name, text)
+
+    # No need to interact with the proxy cache; simply relay the command.
     return ForwardCommandToServer(msg_to_server)
 
 

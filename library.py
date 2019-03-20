@@ -41,7 +41,7 @@ def CreateServerSocket(port):
     sock.bind(server_address)
     
     # Listens for connections.
-    sock.listen(1)
+    sock.listen()
     
     return sock
 
