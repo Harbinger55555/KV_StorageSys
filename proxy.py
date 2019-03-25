@@ -28,7 +28,7 @@ SERVER_PORT = 7777
 LISTENING_PORT = 8888
 
 # Cache values retrieved from the server for this long.
-MAX_CACHE_AGE_SEC = 10.0  # 1 minute
+MAX_CACHE_AGE_SEC = 60.0  # 1 minute
 
 
 def ForwardCommandToServer(msg_to_server):
@@ -44,8 +44,6 @@ def ForwardCommandToServer(msg_to_server):
     
     res = None
 
-    # TODO: currently sending whole cmdline, check if only cmd is sent in real
-    # protocol.
     try:
         # Relay command_line to server and return the response.
         client_socket.sendall(command_line.encode())
