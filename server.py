@@ -125,7 +125,7 @@ def main():
             elif command == 'DUMP':
                 result = DumpCommand(database)
             else:
-                SendText(client_sock, 'Unknown command %s' % command)
+                result = f'Unknown command {command}'
 
             SendText(client_sock, result)
 

@@ -154,7 +154,7 @@ def ProxyClientCommand(sock, server_addr, server_port, cache):
     elif cmd == 'DUMP':
         result = DumpCommand(msg_to_server)
     else:
-        SendText(sock, 'Unknown command %s' % cmd)
+        result = f'Unknown command {cmd}'
     
     SendText(sock, result)
     
